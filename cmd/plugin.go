@@ -57,6 +57,7 @@ func RunPlugin(plugin common.PluginInterface) {
 	for {
 		select {
 		case c := <-command:
+			plugin.Init() // update plugin info
 			switch c.Command {
 			case COMMAND_START_PLUGIN:
 				plugin.Start()

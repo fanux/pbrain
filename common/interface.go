@@ -11,4 +11,5 @@ type PluginInterface interface {
 
 	// Base plugin implementation
 	GetPluginName() string
+	Init()
 }

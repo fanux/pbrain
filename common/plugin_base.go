@@ -13,7 +13,7 @@ func (this *PluginBase) Init() {
 	// new a client
 	this.Plugin, _ = this.Client.GetPluginInfo(this.Plugin.Name)
 	this.Strategies, _ = this.Client.GetPluginStrategies(this.Plugin.Name)
-	fmt.Println("init plugin")
+	fmt.Printf("init plugin [%s] strategies [%s]\n", this.Plugin, this.Strategies)
 }
 
 func (this *PluginBase) GetPluginName() string {
