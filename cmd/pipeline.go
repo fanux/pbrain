@@ -17,7 +17,14 @@ package cmd
 import (
 	"fmt"
 
+	"github.com/fanux/pbrain/common"
+	"github.com/fanux/pbrain/plugins/pipeline"
 	"github.com/spf13/cobra"
+)
+
+var (
+	ManagerHost string
+	ManagerPort string
 )
 
 // pipelineCmd represents the pipeline command
@@ -33,6 +40,7 @@ to quickly create a Cobra application.`,
 	Run: func(cmd *cobra.Command, args []string) {
 		// TODO: Work your own magic here
 		fmt.Println("pipeline called")
+		RunPlugin(&pipeline.Pipeline{common.GetBasePlugin(ManagerHost, ManagerPort, pipeline.PLUGIN_NAME), nil})
 	},
 }
 
@@ -49,4 +57,6 @@ func init() {
 	// is called directly, e.g.:
 	// pipelineCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
 
+	pipelineCmd.Flags().StringVarP(&ManagerHost, "manager-host", "H", "localhost", "the ip address of plugin manager server")
+	pipelineCmd.Flags().StringVarP(&ManagerPort, "manager-port", "p", ":8081", "the port of plugin manager server")
 }
