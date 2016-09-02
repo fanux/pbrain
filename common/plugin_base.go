@@ -21,6 +21,16 @@ func (this *PluginBase) GetPluginName() string {
 	return this.Plugin.Name
 }
 
+func (this *PluginBase) GetStrategy(strategyName string) Strategy {
+	for _, strategy := range this.Strategies {
+		if strategy.Name == strategyName {
+			return strategy
+		}
+	}
+
+	return Strategy{}
+}
+
 // using the plugin manager host and port
 func GetBasePlugin(host, port, pluginName string) *PluginBase {
 	pluginBase := PluginBase{}

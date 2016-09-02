@@ -14,8 +14,7 @@ import (
 const PLUGIN_NAME = "plugin_pipeline"
 
 type Job struct {
-	Cron     *cron.Cron
-	Strategy common.Strategy
+	Cron *cron.Cron
 }
 
 type Pipeline struct {
@@ -49,10 +48,9 @@ func (this *Pipeline) Start() error {
 
 	for _, strategy := range this.Strategies {
 		cron := cron.New()
-		this.Jobs[strategy.Name] = Job{cron, strategy}
+		this.Jobs[strategy.Name] = Job{cron}
 		if this.Plugin.Status == common.PLUGIN_ENABLE {
-			cron.Start()
-
+			//cron.Start()
 			this.EnableStrategy(strategy.Name)
 		}
 	}
@@ -77,14 +75,17 @@ func (this *Pipeline) Stop() error {
 func (this *Pipeline) EnableStrategy(strategyName string) error {
 	// start the strategy Cron
 	job, ok := this.Jobs[strategyName]
-	if !ok || job.Strategy.Status != common.STRATEGY_ENABLE {
-		log.Printf("enable strategy failed: [%s]", strategyName)
+	strategy := this.GetStrategy(strategyName)
+
+	if !ok || strategy.Status != common.STRATEGY_ENABLE {
+		log.Printf("enable strategy failed: [%s] status [%s]", strategyName, strategy.Status)
 		return errors.New("enable strategy failed")
 	}
+	job.Cron.Start()
 
 	rules := []PipelineRule{}
 
-	err := json.Unmarshal([]byte(job.Strategy.Document), &rules)
+	err := json.Unmarshal([]byte(strategy.Document), &rules)
 	if err != nil {
 		return errors.New("unmarshal document failed")
 	}
@@ -100,12 +101,14 @@ func (this *Pipeline) EnableStrategy(strategyName string) error {
 
 func (this *Pipeline) DisableStrategy(strategyName string) error {
 	// stop the strategy Cron
-	fmt.Println("disable strategy: ", strategyName)
-
 	job, ok := this.Jobs[strategyName]
+	strategy := this.GetStrategy(strategyName)
 
-	if ok && job.Strategy.Status == common.STRATEGY_DISABLE {
+	if ok && strategy.Status == common.STRATEGY_DISABLE {
 		job.Cron.Stop()
+		fmt.Println("disable strategy: ", strategyName)
+	} else {
+		fmt.Println("disable strategy failed: ", strategyName, " ", strategy.Status)
 	}
 
 	return nil
