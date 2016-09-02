@@ -22,7 +22,11 @@ type Pipeline struct {
 
 // Start plugin
 func (this *Pipeline) Start() error {
+	// init jobs
+	this.Jobs = make(map[string]Job)
+
 	for _, strategy := range this.Strategies {
+		cron := cron.New()
 	}
 
 	if this.Plugin.Status == common.PLUGIN_ENABLE {
