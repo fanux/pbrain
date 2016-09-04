@@ -51,7 +51,24 @@ func (this *Pipeline) Start() error {
 		this.Jobs[strategy.Name] = Job{cron}
 		if this.Plugin.Status == common.PLUGIN_ENABLE {
 			//cron.Start()
-			this.EnableStrategy(strategy.Name)
+			//this.EnableStrategy(strategy.Name)
+
+			if strategy.Status == common.STRATEGY_ENABLE {
+				cron.Start()
+			}
+
+			rules := []PipelineRule{}
+
+			err := json.Unmarshal([]byte(strategy.Document), &rules)
+			if err != nil {
+				return errors.New("unmarshal document failed")
+			}
+
+			for _, rule := range rules {
+				cronFunc := CronFunc{this.Client, rule}
+				cron.AddFunc(rule.Cron, cronFunc.Run)
+			}
+
 		}
 	}
 
@@ -83,19 +100,21 @@ func (this *Pipeline) EnableStrategy(strategyName string) error {
 	}
 	job.Cron.Start()
 
-	rules := []PipelineRule{}
+	/*
+		rules := []PipelineRule{}
 
-	err := json.Unmarshal([]byte(strategy.Document), &rules)
-	if err != nil {
-		return errors.New("unmarshal document failed")
-	}
+		err := json.Unmarshal([]byte(strategy.Document), &rules)
+		if err != nil {
+			return errors.New("unmarshal document failed")
+		}
 
-	for _, rule := range rules {
-		cronFunc := CronFunc{this.Client, rule}
-		job.Cron.AddFunc(rule.Cron, cronFunc.Run)
-	}
+		for _, rule := range rules {
+			cronFunc := CronFunc{this.Client, rule}
+			job.Cron.AddFunc(rule.Cron, cronFunc.Run)
+		}
 
-	fmt.Println("enable strategy: ", strategyName)
+		fmt.Println("enable strategy: ", strategyName)
+	*/
 	return nil
 }
 
@@ -115,10 +134,39 @@ func (this *Pipeline) DisableStrategy(strategyName string) error {
 }
 
 func (this *Pipeline) UpdateDocument(strategyName string) error {
-	// stop the strategy Cron
-	this.DisableStrategy(strategyName)
-	// start the strategy Cron
-	this.EnableStrategy(strategyName)
+	/*
+		// stop the strategy Cron
+		this.DisableStrategy(strategyName)
+		// start the strategy Cron
+		this.EnableStrategy(strategyName)
+	*/
+
+	strategy := this.GetStrategy(strategyName)
+	job, ok := this.Jobs[strategyName]
+	if ok {
+		job.Cron.Stop()
+	} else {
+		return errors.New("get strategy job error")
+	}
+
+	// new a new cron replace the old one
+	cron := cron.New()
+	this.Jobs[strategy.Name] = Job{cron}
+
+	if strategy.Status == common.STRATEGY_ENABLE {
+		cron.Start()
+	}
+	rules := []PipelineRule{}
+
+	err := json.Unmarshal([]byte(strategy.Document), &rules)
+	if err != nil {
+		return errors.New("unmarshal document failed")
+	}
+
+	for _, rule := range rules {
+		cronFunc := CronFunc{this.Client, rule}
+		cron.AddFunc(rule.Cron, cronFunc.Run)
+	}
 
 	fmt.Println("update document: ", strategyName)
 	return nil
