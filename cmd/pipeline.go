@@ -30,13 +30,8 @@ var (
 // pipelineCmd represents the pipeline command
 var pipelineCmd = &cobra.Command{
 	Use:   "pipeline",
-	Short: "A brief description of your command",
-	Long: `A longer description that spans multiple lines and likely contains examples
-and usage of using your command. For example:
-
-Cobra is a CLI library for Go that empowers applications.
-This application is a tool to generate the needed files
-to quickly create a Cobra application.`,
+	Short: "A pipeline plugin",
+	Long:  `With a simple config file, you can define when、what、how many your app run`,
 	Run: func(cmd *cobra.Command, args []string) {
 		// TODO: Work your own magic here
 		fmt.Println("pipeline called")
