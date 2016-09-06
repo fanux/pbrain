@@ -20,7 +20,7 @@ $ pbrain pipeline
 
 ```
 ▾ cmd/
-    pipeline.go             // 一个具体的插件
+    pipeline.go             // 实例化一个具体的插件
     plugin.go               // 主逻辑，启动插件和启动协程监听plugin manager发来的事件
     root.go
 ▾ common/
