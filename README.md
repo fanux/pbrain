@@ -82,7 +82,7 @@ type Pipeline struct {
     Jobs map[string]Job
 }
 ```
-这里聚合和PluginBase，PluginBase包含了一些能用的插件信息
+这里聚合和PluginBase，PluginBase包含了一些通用的插件信息
 
 ```go
 type PluginBase struct {
