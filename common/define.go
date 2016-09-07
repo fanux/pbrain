@@ -32,3 +32,17 @@ type AppScale struct {
 	App    string
 	Number int
 }
+
+const (
+	COMMAND_START_PLUGIN     = "start-plugin"
+	COMMAND_STOP_PLUGIN      = "stop-plugin"
+	COMMAND_ENABLE_STRATEGY  = "enable-strategy"
+	COMMAND_DISABLE_STRATEGY = "disable-strategy"
+	COMMAND_UPDATE_DOCUMENT  = "update-document"
+)
+
+type Command struct {
+	Command string
+	Channel string // each plugin subscribe it plugin name, plugin name is channel
+	Body    string
+}

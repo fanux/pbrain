@@ -8,30 +8,16 @@ import (
 	"github.com/nats-io/nats"
 )
 
-const (
-	COMMAND_START_PLUGIN     = "start-plugin"
-	COMMAND_STOP_PLUGIN      = "stop-plugin"
-	COMMAND_ENABLE_STRATEGY  = "enable-strategy"
-	COMMAND_DISABLE_STRATEGY = "disable-strategy"
-	COMMAND_UPDATE_DOCUMENT  = "update-document"
-)
-
-type Command struct {
-	Command string
-	Channel string // each plugin subscribe it plugin name, plugin name is channel
-	Body    string
-}
-
 type Message struct {
-	Command chan Command
+	Command chan common.Command
 }
 
-func (this *Message) MqCallBack(command *Command) {
+func (this *Message) MqCallBack(command *common.Command) {
 	fmt.Println("get command: ", command)
 	this.Command <- *command
 }
 
-func listenCommand(pluginName string, command chan Command) {
+func listenCommand(pluginName string, command chan common.Command) {
 	// subscribe plugin channel
 
 	nc, _ := nats.Connect(nats.DefaultURL)
@@ -48,7 +34,7 @@ func listenCommand(pluginName string, command chan Command) {
 }
 
 func RunPlugin(plugin common.PluginInterface) {
-	command := make(chan Command)
+	command := make(chan common.Command)
 
 	plugin.Start()
 
@@ -59,18 +45,23 @@ func RunPlugin(plugin common.PluginInterface) {
 		case c := <-command:
 			plugin.Init() // update plugin info
 			switch c.Command {
-			case COMMAND_START_PLUGIN:
+			case common.COMMAND_START_PLUGIN:
 				plugin.Start()
-			case COMMAND_STOP_PLUGIN:
+			case common.COMMAND_STOP_PLUGIN:
 				plugin.Stop()
-			case COMMAND_ENABLE_STRATEGY:
+			case common.COMMAND_ENABLE_STRATEGY:
 				plugin.EnableStrategy(c.Body)
-			case COMMAND_DISABLE_STRATEGY:
+			case common.COMMAND_DISABLE_STRATEGY:
 				plugin.DisableStrategy(c.Body)
-			case COMMAND_UPDATE_DOCUMENT:
+			case common.COMMAND_UPDATE_DOCUMENT:
 				plugin.UpdateDocument(c.Body)
 			default:
-				log.Printf("Unknown command [%s]\n", c.Command)
+				fun := common.GetCommandHandle(c.Command)
+				if fun != nil {
+					fun(c)
+				} else {
+					log.Printf("Unknown command [%s]\n", c.Command)
+				}
 			}
 		}
 		fmt.Println("start listen a new command")
