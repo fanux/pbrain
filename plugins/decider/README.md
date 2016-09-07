@@ -1,4 +1,4 @@
-## Decider插件介绍
+## Decider插件介绍 (业务驱动调度)
 Decider （决策者） 之所以将此插件命名为这个是因为这个插件决定着容器的生杀大权。
 
 一旦多个app都想伸缩，特别是“伸” 时，就需要权衡先满足谁。
@@ -94,3 +94,110 @@ TODO Metrical最好是一个范围
     "Metrical":80
 }
 ```
+
+
+---
+华丽分割线
+
+## 新的策略文档设计  （静态优先级）
+```json
+[
+    {
+        "App":"ats",
+        "Priority":1,
+        "MinNum":3,
+        ~~"TimeGranularity":30, ~~
+        "Spec":[
+            {
+                "Metrical":[0, 20],
+                "Number":-10,
+            },
+            {
+                "Metrical":[20, 40],
+                "Number":-5,
+            },
+            {
+                "Metrical":[40, 60],
+                "Number":0,
+            },
+            {
+                "Metrical":[60, 80],
+                "Number":5,
+            },
+            {
+                "Metrical":[80, 100],
+                "Number":10,
+            }
+        ]
+    },
+    {
+        "App":"hadoop",
+        "Priority":2,
+        "MinNum":2,
+        ~~"TimeGranularity":30, ~~
+        "Spec":[
+            {
+                "Metrical":[0, 20],
+                "Number":-10,
+            },
+            {
+                "Metrical":[20, 40],
+                "Number":-5,
+            },
+            {
+                "Metrical":[40, 60],
+                "Number":0,
+            },
+            {
+                "Metrical":[60, 80],
+                "Number":5,
+            },
+            {
+                "Metrical":[80, 100],
+                "Number":10,
+            }
+        ]
+    },
+    {
+        "App":"redis",
+        "Priority":3,
+        "MinNum":1,
+        ~~"TimeGranularity":30, ~~
+        "Spec":[
+            {
+                "Metrical":[0, 20],
+                "Number":-10,
+            },
+            {
+                "Metrical":[20, 40],
+                "Number":-5,
+            },
+            {
+                "Metrical":[40, 60],
+                "Number":0,
+            },
+            {
+                "Metrical":[60, 80],
+                "Number":5,
+            },
+            {
+                "Metrical":[80, 100],
+                "Number":10,
+            }
+        ]
+    },
+]
+```
+`Priority`: [1-10] 1表示优先级高， 10表示优先级低, 高优先级的APP需要“伸”时，可释放低优先级的APP,  高优先级的APP处于空闲状态可让出一部分资源给低优先级的APP。
+~~ `TimeGranularity`: 防止业务发送度量消息太频繁，调度已经在进行但是尚未完成。所以这个时间内不重复调度。 ~~
+`MinNum`: 实例最小的运行数量，到底线时不再进行“缩”操作。
+
+业务仅仅上报一个值来描述负载情况：
+````json
+{
+    "App":"ats",
+    "Metrical":80    //数字越小表示资源越过剩，50表示均衡态，资源刚好够用，再大根据配置文件就有可能有扩展资源的动作了。
+}
+```
+
+## 决策算法
