@@ -223,3 +223,68 @@ Output(`hadoop`让出3个，`redis`让出7个)
 2. 需要扩张的总数量设为n， 某个app需要让出的数量为：n*score/(score1 + score2 + score3)
 3. 计算出来的数值要与MinNum比较，如小于这个值就尽最大可能提供，也就是释放当前数量-MinNum个
 4. 尽最大可能满足，有可能需要10个但是返回8个, 这个时候再进行一轮打分分配
+
+---
+华丽分割线
+
+## 两个业务实现
+前期的需求主要是两个业务之间的弹性调度。所以先针对两个业务的场景进行调度。
+```json
+[
+    {
+        "App":"ats",
+        "Priority":1,
+        "MinNum":3,
+        "Spec":[
+            {
+                "Metrical":[0, 20],
+                "Number":-10,
+            },
+            {
+                "Metrical":[20, 40],
+                "Number":-5,
+            },
+            {
+                "Metrical":[40, 60],
+                "Number":0,
+            },
+            {
+                "Metrical":[60, 80],
+                "Number":5,
+            },
+            {
+                "Metrical":[80, 100],
+                "Number":10,
+            }
+        ]
+    },
+    {
+        "App":"hadoop",
+        "Priority":2,
+        "MinNum":2,
+        "Spec":[
+            {
+                "Metrical":[0, 20],
+                "Number":-10,
+            },
+            {
+                "Metrical":[20, 40],
+                "Number":-5,
+            },
+            {
+                "Metrical":[40, 60],
+                "Number":0,
+            },
+            {
+                "Metrical":[60, 80],
+                "Number":5,
+            },
+            {
+                "Metrical":[80, 100],
+                "Number":10,
+            }
+        ]
+    },
+]
+```
+现假设集群有总共有10个节点，初始状态，hadoop运行了5个，ats运行了5个，初始的Metrical值都为50, 下面来看看APP发来一些度量信息时会发生什么样的事。

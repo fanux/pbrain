@@ -16,6 +16,10 @@ func GetCommandHandle(command string) CallBackFunc {
 	return nil
 }
 
+func UnRegistCommand(command string) {
+	delete(register, command)
+}
+
 func init() {
 	register = make(map[string]CallBackFunc)
 }
