@@ -353,3 +353,23 @@ PS: 上面配置文件的粒度很粗，实际情况可以配置更细粒度的�
 其中有很多细节问题需要考虑，如ats低负载时让出资源后要把Metrical值调到50（或者其他值）防止连续收到hadoop发来的高负载度量值，这样ats其实已经缩过了，只有等ats再次发来度量值时才能决定是否能
 
 继续收缩。
+
+## 业务发布消息格式
+```go
+COMMAND_APP_METRICAL = "app-metrical"
+
+type Command struct {
+	Command string
+	Channel string 
+	Body    string
+}
+```
+json 格式为：
+```json
+{
+    "Command":"app-metrical",      # 命令码，目前只有"app-metrical"
+    "Channel":"plugin_decider",    # Channel是插件的名称，也是业务发布消息的关键(主题或通道)
+    "Body":`{"App":"Ats","Metrical":90}`    # 注意Body是个json字符串
+}
+```
+决策者插件会订阅“plugin_decider”通道，业务向这个通道publish上述格式消息即可.
