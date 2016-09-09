@@ -17,6 +17,8 @@ package cmd
 import (
 	"fmt"
 
+	"github.com/fanux/pbrain/common"
+	"github.com/fanux/pbrain/plugins/justice"
 	"github.com/spf13/cobra"
 )
 
@@ -33,6 +35,7 @@ to quickly create a Cobra application.`,
 	Run: func(cmd *cobra.Command, args []string) {
 		// TODO: Work your own magic here
 		fmt.Println("justice called")
+		RunPlugin(&justice.Justice{common.GetBasePlugin(ManagerHost, ManagerPort, justice.PLUGIN_NAME), nil})
 	},
 }
 
