@@ -1,0 +1,50 @@
+
+## 更简化的业务驱动调度设计 plugin_justice
+这个比较针对ats和hadoop的业务场景，根据ats的负载情况决定集群中二者的运行数量
+```json
+[
+    "App":"ats",
+    "Sepc":[
+        {
+            "Metrical":[0-20],
+            "Apps":[
+                {
+                    "App":"ats",
+                    "Number":5,
+                },
+                {
+                    "App":"hadoop:latest",
+                    "Number":15,
+                },
+            ]
+        },
+        {
+            "Metrical":[20-40],
+            "Apps":[
+                {
+                    "App":"ats",
+                    "Number":10,
+                },
+                {
+                    "App":"hadoop:latest",
+                    "Number":10,
+                },
+            ]
+        },
+        {
+            "Metrical":[40-60],
+            "Apps":[
+                {
+                    "App":"ats",
+                    "Number":15,
+                },
+                {
+                    "App":"hadoop:latest",
+                    "Number":5,
+                },
+            ]
+        }
+    ]
+]
+```
+可以看到配置中根据ats实例的数量决定各运行多少个ats，多少个hadoop
