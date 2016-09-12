@@ -23,10 +23,10 @@ func TestEmitCommands(t *testing.T) {
 	mq, _ := nats.NewEncodedConn(nc, nats.JSON_ENCODER)
 	defer mq.Close()
 
-	mq.Publish(CHANNEL, Command{, CHANNEL, ``})
-	mq.Publish(CHANNEL, Command{, CHANNEL, ``})
+	mq.Publish(CHANNEL, Command{COMMAND_APP_METRICAL, CHANNEL, ``})
+	mq.Publish(CHANNEL, Command{COMMAND_APP_METRICAL, CHANNEL, ``})
 
-	mq.Publish(CHANNEL, Command{, CHANNEL, ``})
-	mq.Publish(CHANNEL, Command{, CHANNEL, ``})
-	mq.Publish(CHANNEL, Command{, CHANNEL, ``})
+	mq.Publish(CHANNEL, Command{COMMAND_APP_METRICAL, CHANNEL, ``})
+	mq.Publish(CHANNEL, Command{COMMAND_APP_METRICAL, CHANNEL, ``})
+	mq.Publish(CHANNEL, Command{COMMAND_APP_METRICAL, CHANNEL, ``})
 }
