@@ -17,6 +17,8 @@ package cmd
 import (
 	"fmt"
 
+	"github.com/fanux/pbrain/common"
+	"github.com/fanux/pbrain/plugins/decider"
 	"github.com/spf13/cobra"
 )
 
@@ -33,6 +35,7 @@ to quickly create a Cobra application.`,
 	Run: func(cmd *cobra.Command, args []string) {
 		// TODO: Work your own magic here
 		fmt.Println("decider called")
+		RunPlugin(&decider.Decider{common.GetBasePlugin(ManagerHost, ManagerPort, decider.PLUGIN_NAME), nil})
 	},
 }
 

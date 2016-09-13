@@ -109,7 +109,7 @@ TODO Metrical最好是一个范围
         "MinNum":3,
         "Spec":[
             {
-                "Metrical":[0, 20],
+                "Metrical":[0, 20],  #  0 <= metrical < 20
                 "Number":-10,
             },
             {
