@@ -50,9 +50,11 @@ type Decider struct {
 	Documents map[string]Document // key is strategy name
 }
 
+/*
 type Filter struct {
 	Selected []common.AppScale
 }
+*/
 
 // Only one strategy is better, strategy name shows app belong to witch strategy
 func (this *Decider) getAppInfo(appName string) (*AppInfo, string) {
@@ -132,15 +134,57 @@ func getScaleNumber(metrical int, appConf AppConf) (int, error) {
 	return 0, errors.New("get scale number failed")
 }
 
-func (this *Decider) getAppScales(appInfo *AppInfo, scaleNumber int) []common.AppScale {
-	// TODO decide scale witch apps
-	// filter := Filter{[]common.AppScale{}}
+func makeScore(appInfo AppInfo) int {
+	return 100 - appInfo.CurrentMetrical + 10*appInfo.AppConf.Priority
+}
 
-	// TODO filter witch metrical is below balance metrical
+func getNeedFreeInstanceNum(score, totalScore, scaleNumber int) (n int) {
+	n = scaleNumber * score / totalScore
+	return (n + 1)
+}
 
-	// TODO filter witch priority is lower
+func (this *Decider) getAppScales(strategyName string, appInfo *AppInfo, scaleNumber int) []common.AppScale {
+	// decide scale witch apps
+	totalScore := 0
+	filter := []common.AppScale{}
+	appScore := make(map[string]int) // key is app name, and value is score
 
-	return []common.AppScale{}
+	document, ok := this.Documents[strategyName]
+	if !ok {
+		log.Printf("get strategy document failed: [%s]", strategyName)
+		return nil
+	}
+
+	for _, v := range document.AppInfos {
+		n, err := getScaleNumber(v.CurrentMetrical, v.AppConf)
+		if err != nil {
+			continue
+		}
+
+		if n < 0 {
+			filter = append(filter, common.AppScale{v.AppConf.App, n})
+		} else if n >= 0 && v.AppConf.Priority > appInfo.AppConf.Priority {
+			// make a score
+			s := makeScore(v)
+			appScore[v.AppConf.App] = s
+
+			totalScore += s
+		}
+	}
+
+	var totalFree = 0
+
+	for app, score := range appScore {
+		num := getNeedFreeInstanceNum(score, totalScore, scaleNumber)
+		log.Printf("get need free instance num: [%d] App: [%s]", num, app)
+		if totalFree+num > scaleNumber {
+			num = scaleNumber - totalFree
+		}
+		filter = append(filter, common.AppScale{app, -num})
+		totalFree += num
+	}
+
+	return filter
 }
 
 // one strategy one scale, not one plugin one scale
@@ -152,7 +196,7 @@ func (this *Decider) OnScale(command common.Command) error {
 		return err
 	}
 
-	appInfo, _ := this.getAppInfo(appMetrical.App)
+	appInfo, strategyName := this.getAppInfo(appMetrical.App)
 	if appInfo == nil {
 		log.Printf("can not get app info, may be the strategy is disabled.")
 		return nil
@@ -164,12 +208,14 @@ func (this *Decider) OnScale(command common.Command) error {
 		return err
 	}
 
+	log.Printf("get scale number: %d", scaleNumber)
+
 	if scaleNumber <= 0 {
 		// Do nothing except set the new metrical
 		return nil
 	} else if scaleNumber > 0 {
-		appScales := this.getAppScales(appInfo, scaleNumber)
-		fmt.Println(appScales)
+		appScales := this.getAppScales(strategyName, appInfo, scaleNumber)
+		fmt.Println("===need scale=====", appScales)
 
 		// TODO must know current app instance number
 
