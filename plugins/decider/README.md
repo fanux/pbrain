@@ -104,6 +104,7 @@ TODO Metrical最好是一个范围
 [
     {
         "App":"ats",
+        "Image":"ats:latest",
         "Priority":1,
         "MinNum":3,
         "Spec":[
@@ -131,6 +132,7 @@ TODO Metrical最好是一个范围
     },
     {
         "App":"hadoop",
+        "Image":"hadoop:latest",
         "Priority":2,
         "MinNum":2,
         "Spec":[
@@ -158,6 +160,7 @@ TODO Metrical最好是一个范围
     },
     {
         "App":"redis",
+        "Image":"redis:v1.0"
         "Priority":3,
         "MinNum":1,
         "Spec":[

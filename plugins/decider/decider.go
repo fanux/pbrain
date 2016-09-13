@@ -20,6 +20,7 @@ type AppMetrical struct {
 
 type AppConf struct {
 	App      string
+	Image string
 	Priority int
 	MinNum   int
 	Spec     []struct {
