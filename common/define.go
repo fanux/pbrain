@@ -42,6 +42,14 @@ type MetricalAppScale struct {
 	MinNum int
 }
 
+/*
+	scale hosts list
+*/
+type MetricalAppScaleHosts struct {
+	MetricalAppScale
+	Hosts []string
+}
+
 const (
 	COMMAND_START_PLUGIN     = "start-plugin"
 	COMMAND_STOP_PLUGIN      = "stop-plugin"

@@ -37,6 +37,7 @@ func (this Api) GetPluginInfo(pluginName string) (Plugin, error) {
 	req, _ := http.NewRequest("GET", url, nil)
 
 	resp, err := client.Do(req)
+	defer resp.Body.Close()
 	if err != nil {
 		log.Printf("get plugin info failed: %s", err)
 	}
@@ -73,6 +74,7 @@ func (this Api) GetPluginStrategies(pluginName string) ([]Strategy, error) {
 	req, _ := http.NewRequest("GET", url, nil)
 
 	resp, err := client.Do(req)
+	defer resp.Body.Close()
 	if err != nil {
 		log.Printf("get plugin strategies info failed: %s", err)
 	}
@@ -98,6 +100,7 @@ func (this Api) ScaleApps(appscale []AppScale) error {
 	req.Header.Set("Content-type", "application/json")
 
 	resp, err := client.Do(req)
+	defer resp.Body.Close()
 	if err != nil {
 		log.Printf("get plugin strategies info failed: %s", err)
 		fmt.Println(resp)
@@ -106,9 +109,11 @@ func (this Api) ScaleApps(appscale []AppScale) error {
 	return err
 }
 
-func (this Api) MetricalScaleApps(appscale []MetricalAppScale) error {
+func (this Api) MetricalScaleApps(appscale []MetricalAppScale) ([]MetricalAppScaleHosts, error) {
 	s, _ := json.Marshal(appscale)
 	log.Printf("metrical scale apps: \n%s\n", string(s))
+
+	metricalHosts := []MetricalAppScaleHosts{}
 
 	client := &http.Client{}
 
@@ -119,10 +124,15 @@ func (this Api) MetricalScaleApps(appscale []MetricalAppScale) error {
 	req.Header.Set("Content-type", "application/json")
 
 	resp, err := client.Do(req)
+	defer resp.Body.Close()
 	if err != nil {
 		log.Printf("get plugin strategies info failed: %s", err)
 		fmt.Println(resp)
+
+		return metricalHosts, err
 	}
 
-	return err
+	json.NewDecoder(resp.Body).Decode(&metricalHosts)
+
+	return metricalHosts, err
 }

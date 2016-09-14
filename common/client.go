@@ -38,7 +38,7 @@ type Client interface {
 			}
 		]
 	*/
-	MetricalScaleApps(appscale []MetricalAppScale) error
+	MetricalScaleApps(appscale []MetricalAppScale) ([]MetricalAppScaleHosts, error)
 }
 
 func NewClient(host, port string) Client {
