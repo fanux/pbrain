@@ -229,6 +229,29 @@ Output(`hadoop`让出3个，`redis`让出7个)
 3. 计算出来的数值要与MinNum比较，如小于这个值就尽最大可能提供，也就是释放当前数量-MinNum个
 4. 尽最大可能满足，有可能需要10个但是返回8个, 这个时候再进行一轮打分分配
 
+### 伸缩动作执行
+`/plugins/metrical/scale`
+```json
+[
+    {
+        "App":"ats:latest",
+        "Number":5,
+        "MinNum":2
+    },
+    {
+        "App":"hadoop:latest",
+        "Number":-2,
+        "MinNum":1
+    },
+    {
+        "App":"redis:latest",
+        "Number":-3,
+        "MinNum":3
+    }
+]
+```
+以上信息插件发送给manager，告诉它：我要扩展5个镜像为“ats:latest”的实例，如果资源不够就释放2个hadoop实例3个redis实例来满足，但是要保证集群中至少还有1个hadoop,和3个redis，如果达到最小实例运行数量就不释放了
+
 ---
 华丽分割线
 

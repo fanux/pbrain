@@ -33,6 +33,15 @@ type AppScale struct {
 	Number int
 }
 
+/*
+	metrical scale app, need define the min number of app
+*/
+type MetricalAppScale struct {
+	App    string
+	Number int
+	MinNum int
+}
+
 const (
 	COMMAND_START_PLUGIN     = "start-plugin"
 	COMMAND_STOP_PLUGIN      = "stop-plugin"

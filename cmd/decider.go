@@ -25,17 +25,13 @@ import (
 // deciderCmd represents the decider command
 var deciderCmd = &cobra.Command{
 	Use:   "decider",
-	Short: "A brief description of your command",
-	Long: `A longer description that spans multiple lines and likely contains examples
-and usage of using your command. For example:
-
-Cobra is a CLI library for Go that empowers applications.
-This application is a tool to generate the needed files
-to quickly create a Cobra application.`,
+	Short: "scale apps by app metrical",
+	Long:  `app metrical is loadbalance info, or cpu memery use info`,
 	Run: func(cmd *cobra.Command, args []string) {
-		// TODO: Work your own magic here
+		//  Work your own magic here
 		fmt.Println("decider called")
-		RunPlugin(&decider.Decider{common.GetBasePlugin(ManagerHost, ManagerPort, decider.PLUGIN_NAME), nil})
+		basePlugin := common.GetBasePlugin(ManagerHost, ManagerPort, decider.PLUGIN_NAME)
+		RunPlugin(&decider.Decider{basePlugin, nil})
 	},
 }
 
