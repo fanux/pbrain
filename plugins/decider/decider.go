@@ -217,9 +217,20 @@ func (this *Decider) OnScale(command common.Command) error {
 		appScales := this.getAppScales(strategyName, appInfo, scaleNumber)
 		fmt.Println("===need scale=====", appScales)
 
-		// TODO must know current app instance number
+		metricalAppScales := []common.MetricalAppScale{}
 
-		// this.Client.ScaleApps(appScales)
+		for _, app := range appScales {
+			aInfo, _ := this.getAppInfo(app.App)
+			metricalAppScales = append(metricalAppScales,
+				common.MetricalAppScale{app.App, app.Number, aInfo.AppConf.MinNum})
+		}
+
+		metricalAppScaleHosts, e := this.Client.MetricalScaleApps(metricalAppScales)
+
+		if e != nil {
+			log.Printf("get metrical app scale hosts failed [%s]", e)
+			fmt.Println(metricalAppScaleHosts)
+		}
 	}
 
 	defer func() {
