@@ -9,16 +9,36 @@ type Client interface {
 	/*
 		[
 			{
-				"app":"ats",
-				"num":20,
+				"App":"ats",
+				"Number":20,
 			},
 			{
-				"app":"hadoop",
-				"num":10
+				"App":"hadoop",
+				"Number":10
 			}
 		]
 	*/
 	ScaleApps(appscale []AppScale) error
+	/*
+		[
+			{
+				"App":"ats:latest",
+				"Number":5,
+				"MinNum":2
+			},
+			{
+				"App":"hadoop:latest",
+				"Number":-2,
+				"MinNum":1
+			},
+			{
+				"App":"redis:latest",
+				"Number":-3,
+				"MinNum":3
+			}
+		]
+	*/
+	MetricalScaleApps(appscale []MetricalAppScale) error
 }
 
 func NewClient(host, port string) Client {

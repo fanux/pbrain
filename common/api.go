@@ -105,3 +105,24 @@ func (this Api) ScaleApps(appscale []AppScale) error {
 
 	return err
 }
+
+func (this Api) MetricalScaleApps(appscale []MetricalAppScale) error {
+	s, _ := json.Marshal(appscale)
+	log.Printf("metrical scale apps: \n%s\n", string(s))
+
+	client := &http.Client{}
+
+	url := fmt.Sprintf("http://%s%s/plugins/metrical/scale", this.host, this.port)
+
+	req, _ := http.NewRequest("POST", url, strings.NewReader(string(s)))
+
+	req.Header.Set("Content-type", "application/json")
+
+	resp, err := client.Do(req)
+	if err != nil {
+		log.Printf("get plugin strategies info failed: %s", err)
+		fmt.Println(resp)
+	}
+
+	return err
+}
