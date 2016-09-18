@@ -225,12 +225,16 @@ func (this *Decider) OnScale(command common.Command) error {
 				common.MetricalAppScale{app.App, app.Number, aInfo.AppConf.MinNum})
 		}
 
+		metricalAppScales = append(metricalAppScales,
+			common.MetricalAppScale{appInfo.AppConf.App,
+				scaleNumber, appInfo.AppConf.MinNum})
+
 		metricalAppScaleHosts, e := this.Client.MetricalScaleApps(metricalAppScales)
 
 		if e != nil {
 			log.Printf("get metrical app scale hosts failed [%s]", e)
-			fmt.Println(metricalAppScaleHosts)
 		}
+		fmt.Println("get metrical app scale hosts", metricalAppScaleHosts)
 	}
 
 	defer func() {

@@ -25,7 +25,8 @@ func TestEmitCommands(t *testing.T) {
 	mq, _ := nats.NewEncodedConn(nc, nats.JSON_ENCODER)
 	defer mq.Close()
 
-	mq.Publish(CHANNEL, Command{COMMAND_APP_METRICAL, CHANNEL, `{"App":"ats", "Metrical":90}`})
+	//mq.Publish(CHANNEL, Command{COMMAND_APP_METRICAL, CHANNEL, `{"App":"ats", "Metrical":90}`})
+	mq.Publish(CHANNEL, Command{COMMAND_APP_METRICAL, CHANNEL, `{"App":"172.20.1.128:5000/nginx:latest", "Metrical":90}`})
 	//mq.Publish(CHANNEL, Command{COMMAND_APP_METRICAL, CHANNEL, `{"App":"ats", "Metrical":30}`})
 	//mq.Publish(CHANNEL, Command{COMMAND_APP_METRICAL, CHANNEL, `{"App":"ats", "Metrical":90}`})
 	//mq.Publish(CHANNEL, Command{COMMAND_APP_METRICAL, CHANNEL, `{"App":"hadoop", "Metrical":20}`})
