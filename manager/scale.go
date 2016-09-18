@@ -5,6 +5,7 @@ import (
 	"strings"
 
 	"github.com/emicklei/go-restful"
+	"github.com/fanux/pbrain/common"
 	"github.com/samalba/dockerclient"
 )
 
@@ -149,4 +150,20 @@ func (this PluginResource) scaleApp(request *restful.Request,
 	deployContainers(scaleInfo, dockerClient)
 
 	//fmt.Println("scale map: ", scaleInfo["ats"])
+}
+
+func (this PluginResource) metricalScaleApp(request *restful.Request,
+	response *restful.Response) {
+
+	scaleApp := []common.MetricalAppScale{}
+
+	dockerClient, err := dockerclient.NewDockerClient(DockerHost, nil)
+	if err != nil {
+		fmt.Printf("init docker client error:%s", err)
+	}
+
+	err = request.ReadEntity(&scaleApp)
+	if err != nil {
+	}
+	fmt.Println("scale : ", scaleApp)
 }

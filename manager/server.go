@@ -6,6 +6,7 @@ import (
 	"net/http"
 
 	"github.com/emicklei/go-restful"
+	"github.com/fanux/pbrain/common"
 	"github.com/jinzhu/gorm"
 	"github.com/nats-io/nats"
 )
@@ -142,6 +143,11 @@ func (p PluginResource) Register(container *restful.Container) {
 		Doc("scale app").
 		Operation("scaleApp").
 		Reads([]ScaleApp{}))
+
+	ws.Route(ws.POST("/metrical/scale").To(p.metricalScaleApp).
+		Doc("metrical scale app").
+		Operation("metricalScaleApp").
+		Reads([]common.MetricalAppScale{}))
 
 	container.Add(ws)
 }
