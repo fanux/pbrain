@@ -262,19 +262,23 @@ func updateScaleDownAppHosts(hostsMap map[string]common.MetricalAppScaleHosts,
 		if temp.Number < 0 {
 			ip := getContainerHostIp(c.Id)
 			if ip != "" {
-				temp.Hosts = append(temp.Hosts)
+				temp.Hosts = append(temp.Hosts, ip)
+				fmt.Printf("get host image [%s] host list [%s]\n", c.Image, temp.Hosts)
 			}
 		}
 		hostsMap[c.Image] = temp
 	}
+
+	fmt.Println("get scale down hosts map: ", hostsMap)
 }
 
-func initHosts(hosts []common.MetricalAppScaleHosts,
-	hostsMap map[string]common.MetricalAppScaleHosts) {
+func initHosts(hostsMap map[string]common.MetricalAppScaleHosts) []common.MetricalAppScaleHosts {
 
+	hosts := []common.MetricalAppScaleHosts{}
 	for _, v := range hostsMap {
 		hosts = append(hosts, v)
 	}
+	return hosts
 }
 
 func (this PluginResource) metricalScaleApp(request *restful.Request,
@@ -314,7 +318,6 @@ func (this PluginResource) metricalScaleApp(request *restful.Request,
 
 	// get container list and update host list
 	updateScaleDownAppHosts(hostsMap, dockerClient)
-	initHosts(hosts, hostsMap)
-	fmt.Println(hosts)
+	hosts = initHosts(hostsMap)
 	response.WriteHeaderAndEntity(http.StatusOK, hosts)
 }
