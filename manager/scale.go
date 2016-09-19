@@ -171,6 +171,14 @@ func (this PluginResource) scaleApp(request *restful.Request,
 	//fmt.Println("scale map: ", scaleInfo["ats"])
 }
 
+func showMap(hostsMap map[string]common.MetricalAppScaleHosts) {
+	fmt.Println("+++++++++++++++++++++++++++++++++")
+	for k, v := range hostsMap {
+		fmt.Println("map key: ", k, " map value: ", v)
+	}
+	fmt.Println("+++++++++++++++++++++++++++++++++")
+}
+
 // return the one who want scale up
 func initMetricalHostsMap(hostsMap map[string]common.MetricalAppScaleHosts,
 	scaleApp []common.MetricalAppScale) common.MetricalAppScale {
@@ -223,7 +231,6 @@ func getContainerHostIp(Id string) string {
 	req, _ := http.NewRequest("GET", url, nil)
 
 	resp, err := client.Do(req)
-	defer resp.Body.Close()
 	if err != nil {
 		log.Printf("get plugin info failed: %s", err)
 		return ""
@@ -290,19 +297,10 @@ func (this PluginResource) metricalScaleApp(request *restful.Request,
 	fmt.Println("scale : ", scaleApp)
 
 	scaleUpApp := initMetricalHostsMap(hostsMap, scaleApp)
+	//showMap(hostsMap)
+
 	// first round scale
 	res := scaleContainerByImageName(scaleUpApp.App, scaleUpApp.Number, dockerClient)
-	/*
-		// set the scale up app number
-		metricalAppScaleHosts, ok := hostsMap[scaleUpApp.App]
-		if !ok {
-			log.Printf("get scale up app failed: [%s]", scaleUpApp.App)
-			return
-		}
-		// len(res.Scaled) apps is successed deployed
-		metricalAppScaleHosts.Number = scaleUpApp.Number - len(res.Scaled)
-		hostsMap[scaleUpApp.App] = metricalAppScaleHosts
-	*/
 	n, e := setAppNumber(scaleUpApp.App, hostsMap, len(res.Scaled))
 	if e != nil {
 		response.WriteHeaderAndEntity(http.StatusInternalServerError, hosts)
