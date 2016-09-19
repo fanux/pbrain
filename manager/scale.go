@@ -171,6 +171,7 @@ func (this PluginResource) scaleApp(request *restful.Request,
 	//fmt.Println("scale map: ", scaleInfo["ats"])
 }
 
+/*
 func showMap(hostsMap map[string]common.MetricalAppScaleHosts) {
 	fmt.Println("+++++++++++++++++++++++++++++++++")
 	for k, v := range hostsMap {
@@ -178,6 +179,7 @@ func showMap(hostsMap map[string]common.MetricalAppScaleHosts) {
 	}
 	fmt.Println("+++++++++++++++++++++++++++++++++")
 }
+*/
 
 // return the one who want scale up
 func initMetricalHostsMap(hostsMap map[string]common.MetricalAppScaleHosts,
