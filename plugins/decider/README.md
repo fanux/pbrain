@@ -312,7 +312,7 @@ manerger将可进行伸缩的节点，容器等信息返回给插件，插件再
 这样做的好处是插件不用维护任何状态。也不用维护任何持久化数据，任务队列等
 
 ```
-       业务             插件          manager               swarm
+       app            plugin          manager               swarm
         |ats metrical 70 |              |                     |
         |--------------->|--+           |                     |
         |                |  |scale up10 |                     |
