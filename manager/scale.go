@@ -7,6 +7,7 @@ import (
 	"log"
 	"net/http"
 	"strings"
+	"sync"
 
 	"github.com/emicklei/go-restful"
 	"github.com/fanux/pbrain/common"
@@ -96,6 +97,8 @@ func scaleContainer(id string, numInstances int, client *dockerclient.DockerClie
 		result  = ScaleResult{Scaled: make([]string, 0), Errors: make([]string, 0)}
 	)
 
+	var lock sync.Mutex
+
 	// docker client get container info
 	containerInfo, err := client.InspectContainer(id)
 	if err != nil {
@@ -111,6 +114,8 @@ func scaleContainer(id string, numInstances int, client *dockerclient.DockerClie
 			hostConfig := containerInfo.HostConfig
 			config.HostConfig = *hostConfig // sending hostconfig via the Start-endpoint is deprecated starting with docker-engine 1.12
 			// using docker client create Container
+
+			lock.Lock()
 			id, err := client.CreateContainer(config, "", nil)
 			if err != nil {
 				errChan <- err
@@ -121,6 +126,7 @@ func scaleContainer(id string, numInstances int, client *dockerclient.DockerClie
 				errChan <- err
 				return
 			}
+			lock.Unlock()
 			resChan <- id
 		}(i)
 	}
