@@ -14,8 +14,14 @@
 
 package main
 
-import "github.com/fanux/pbrain/cmd"
+import (
+	"log"
+
+	"github.com/fanux/pbrain/cmd"
+)
 
 func main() {
+	// print the file name directory and line
+	log.SetFlags(log.Llongfile)
 	cmd.Execute()
 }

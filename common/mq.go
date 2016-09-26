@@ -71,6 +71,7 @@ func init() {
 	if err != nil {
 		log.Print("mq init error")
 	} else {
+		mq = Mq{}
 		mq.conn = c
 	}
 

@@ -149,6 +149,11 @@ func (p PluginResource) Register(container *restful.Container) {
 		Operation("metricalScaleApp").
 		Reads([]common.MetricalAppScale{}))
 
+	ws.Route(ws.POST("/metrical/scale/action").To(p.metricalScaleAppAction).
+		Doc("metrical scale app action").
+		Operation("metricalScaleAppAction").
+		Reads(common.InformScaleDownAppMessage{}))
+
 	container.Add(ws)
 }
 

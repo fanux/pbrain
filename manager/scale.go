@@ -323,3 +323,88 @@ func (this PluginResource) metricalScaleApp(request *restful.Request,
 	hosts = initHosts(hostsMap)
 	response.WriteHeaderAndEntity(http.StatusOK, hosts)
 }
+
+func isInStringArray(key string, array []string) bool {
+	flag := false
+	for _, a := range array {
+		if a == key {
+			flag = true
+		}
+	}
+
+	return flag
+}
+
+// return the real released app num
+func releaseContainersFilterHost(scaleMessage common.InformScaleDownAppMessage,
+	dockerClient *dockerclient.DockerClient) int {
+	// must consider min number
+	releaseContainerIds := []string{}
+	// count container remaining
+	containerRemainingCount := 0
+	// need release num temp
+	temp := -scaleMessage.Number
+	// release number
+	releaseNum := -1
+
+	containers, err := dockerClient.ListContainers(true, false, "")
+	if err != nil {
+	}
+
+	for _, c := range containers {
+		if c.Image != scaleMessage.App {
+			continue
+		}
+
+		ip := getContainerHostIp(c.Id)
+		if isInStringArray(ip, scaleMessage.Hosts) && scaleMessage.Number != 0 {
+			releaseContainerIds = append(releaseContainerIds, c.Id)
+			scaleMessage.Number++
+			continue
+		}
+
+		containerRemainingCount++
+		if scaleMessage.Number == 0 && containerRemainingCount >= scaleMessage.MinNum {
+			releaseNum = temp
+			break
+		}
+	}
+
+	if containerRemainingCount < scaleMessage.MinNum {
+		releaseNum = len(releaseContainerIds) - (scaleMessage.MinNum - containerRemainingCount)
+	}
+
+	for _, cId := range releaseContainerIds[:releaseNum] {
+		// stop container with 5 seconds timeout
+		dockerClient.StopContainer(cId, 5)
+		// force remove, delete volume
+		dockerClient.RemoveContainer(cId, true, true)
+	}
+
+	return releaseNum
+}
+
+func (this PluginResource) metricalScaleAppAction(request *restful.Request,
+	response *restful.Response) {
+
+	scaleMessage := common.InformScaleDownAppMessage{}
+
+	err := request.ReadEntity(&scaleMessage)
+	if err != nil {
+		log.Printf("get metrical scale action info failed")
+	}
+	fmt.Println("metrical scale action: ", scaleMessage)
+
+	dockerClient, err := dockerclient.NewDockerClient(DockerHost, nil)
+	if err != nil {
+		fmt.Printf("init docker client error:%s", err)
+	}
+
+	// must consider min number
+	n := releaseContainersFilterHost(scaleMessage, dockerClient)
+	if n != -1 {
+		scaleContainerByImageName(scaleMessage.ScaleUp, n, dockerClient)
+	} else {
+		log.Printf("release container error")
+	}
+}

@@ -11,6 +11,7 @@ import (
 
 const (
 	COMMAND_APP_METRICAL = "app-metrical"
+	COMMAND_APP_SCALE    = "app-scale"
 
 	DEFAULT_METRICAL = 50
 
@@ -99,22 +100,26 @@ func (this *Decider) initDocuments() {
 func (this *Decider) Start() error {
 	this.initDocuments()
 	common.RegistCommand(COMMAND_APP_METRICAL, this.OnScale)
+	common.RegistCommand(COMMAND_APP_SCALE, this.ScaleAction)
 	return nil
 }
 
 func (this *Decider) Stop() error {
 	common.UnRegistCommand(COMMAND_APP_METRICAL)
+	common.UnRegistCommand(COMMAND_APP_SCALE)
 	return nil
 }
 
 func (this *Decider) DisableStrategy(strategyName string) error {
 	common.UnRegistCommand(COMMAND_APP_METRICAL)
+	common.UnRegistCommand(COMMAND_APP_SCALE)
 	return nil
 }
 
 func (this *Decider) EnableStrategy(strategyName string) error {
 	this.initDocuments()
 	common.RegistCommand(COMMAND_APP_METRICAL, this.OnScale)
+	common.RegistCommand(COMMAND_APP_SCALE, this.ScaleAction)
 	return nil
 }
 
@@ -187,6 +192,20 @@ func (this *Decider) getAppScales(strategyName string, appInfo *AppInfo, scaleNu
 	return filter
 }
 
+func publishMessagesToApps(metricalAppScaleHosts []common.MetricalAppScaleHosts,
+	scaleUpAppName string) {
+
+	mq := common.NewMq()
+
+	for _, v := range metricalAppScaleHosts {
+		if v.Number < 0 {
+			m := common.InformScaleDownAppMessage{v, scaleUpAppName}
+			// each app subscribe itself
+			mq.Publish(v.App, m)
+		}
+	}
+}
+
 // one strategy one scale, not one plugin one scale
 // or select one enable strategy witch include the APP config
 func (this *Decider) OnScale(command common.Command) error {
@@ -233,8 +252,11 @@ func (this *Decider) OnScale(command common.Command) error {
 
 		if e != nil {
 			log.Printf("get metrical app scale hosts failed [%s]", e)
+			return e
 		}
 		fmt.Println("get metrical app scale hosts", metricalAppScaleHosts)
+		// publish messages to apps
+		publishMessagesToApps(metricalAppScaleHosts, appInfo.AppConf.App)
 	}
 
 	defer func() {
@@ -243,4 +265,15 @@ func (this *Decider) OnScale(command common.Command) error {
 	}()
 
 	return nil
+}
+
+// handler app send scale action message when app after stop itself
+func (this *Decider) ScaleAction(command common.Command) error {
+	message := common.InformScaleDownAppMessage{}
+	err := json.Unmarshal([]byte(command.Body), &message)
+	if err != nil {
+	}
+
+	this.Client.MetricalScaleAppsAction(message)
+	return err
 }

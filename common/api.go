@@ -126,7 +126,7 @@ func (this Api) MetricalScaleApps(appscale []MetricalAppScale) ([]MetricalAppSca
 	resp, err := client.Do(req)
 	defer resp.Body.Close()
 	if err != nil {
-		log.Printf("get plugin strategies info failed: %s", err)
+		log.Printf("metrical scale apps failed: %s", err)
 		fmt.Println(resp)
 
 		return metricalHosts, err
@@ -135,4 +135,26 @@ func (this Api) MetricalScaleApps(appscale []MetricalAppScale) ([]MetricalAppSca
 	json.NewDecoder(resp.Body).Decode(&metricalHosts)
 
 	return metricalHosts, err
+}
+
+func (this Api) MetricalScaleAppsAction(message InformScaleDownAppMessage) error {
+	s, _ := json.Marshal(message)
+	log.Printf("metrical scale action: \n%s\n", string(s))
+
+	client := &http.Client{}
+
+	url := fmt.Sprintf("http://%s%s/plugins/metrical/scale/action", this.host, this.port)
+
+	req, _ := http.NewRequest("POST", url, strings.NewReader(string(s)))
+
+	req.Header.Set("Content-type", "application/json")
+
+	resp, err := client.Do(req)
+	defer resp.Body.Close()
+	if err != nil {
+		log.Printf("metrical scale action failed: %s", err)
+		fmt.Println(resp)
+	}
+
+	return err
 }

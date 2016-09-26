@@ -63,3 +63,9 @@ type Command struct {
 	Channel string // each plugin subscribe it plugin name, plugin name is channel
 	Body    string
 }
+
+type InformScaleDownAppMessage struct {
+	MetricalAppScaleHosts
+	// release the app for witch app scale up, so decider is stateless
+	ScaleUp string
+}

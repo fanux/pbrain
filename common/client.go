@@ -39,6 +39,19 @@ type Client interface {
 		]
 	*/
 	MetricalScaleApps(appscales []MetricalAppScale) ([]MetricalAppScaleHosts, error)
+	/*
+		{
+		    "App":"hadoop:latest",
+		    "Number":-2,             # 会释放2个实例
+		    "MinNumber":1,
+		    "Hosts":[
+		        "192.168.0.2",       # 将释放哪些节点上的实例
+		        "192.168.0.3",
+		    ],
+		    "ScaleUp":"ats:latest"    # 释放的实例用于启动哪个业务，业务不需要关心这个字段
+		}
+	*/
+	MetricalScaleAppsAction(message InformScaleDownAppMessage) error
 }
 
 func NewClient(host, port string) Client {
