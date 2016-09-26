@@ -374,6 +374,8 @@ func releaseContainersFilterHost(scaleMessage common.InformScaleDownAppMessage,
 		releaseNum = len(releaseContainerIds) - (scaleMessage.MinNum - containerRemainingCount)
 	}
 
+	log.Println("release containers: ", releaseContainerIds, " number: ", releaseNum)
+
 	for _, cId := range releaseContainerIds[:releaseNum] {
 		// stop container with 5 seconds timeout
 		dockerClient.StopContainer(cId, 5)

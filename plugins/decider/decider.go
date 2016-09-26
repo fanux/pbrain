@@ -202,6 +202,8 @@ func publishMessagesToApps(metricalAppScaleHosts []common.MetricalAppScaleHosts,
 			m := common.InformScaleDownAppMessage{v, scaleUpAppName}
 			// each app subscribe itself
 			mq.Publish(v.App, m)
+			s, _ := json.Marshal(m)
+			log.Println("Publish message to apps: ", string(s))
 		}
 	}
 }
