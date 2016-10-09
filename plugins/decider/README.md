@@ -496,12 +496,30 @@ type Command struct {
 json 格式为：
 ```json
 {
-    "Command":"app-metrical",      # 命令码，目前只有"app-metrical"
+    "Command":"app-metrical",      # 命令码
     "Channel":"plugin_decider",    # Channel是插件的名称，也是业务发布消息的关键(主题或通道)
     "Body":`{"App":"Ats","Metrical":90}`    # 注意Body是个json字符串
 }
 ```
 决策者插件会订阅“plugin_decider”通道，业务向这个通道publish上述格式消息即可.
+
+伸缩动作执行的json：
+```json
+{
+    "Command":"app-scale",      # 命令码
+    "Channel":"plugin_decider",    # Channel是插件的名称，也是业务发布消息的关键(主题或通道)
+    "Body":`{
+        "App":"hadoop:latest",
+        "Number":-2,         
+        "MinNumber":1,
+        "Hosts":[
+            "192.168.0.2",  
+            "192.168.0.3",
+        ],
+        "ScaleUp":"ats:latest"  
+    }`  # 注意Body是个json字符串
+}
+```
 
 ## 另一种更简化的设计 (我们用一个新的插件实现这个，命名为plugin_justice)
 这个比较针对ats和hadoop的业务场景，根据ats的负载情况决定集群中二者的运行数量
