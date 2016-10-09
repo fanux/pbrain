@@ -390,7 +390,7 @@ func RunServer(host string, port string) {
 	cors := restful.CrossOriginResourceSharing{
 		AllowedHeaders: []string{"Origin", "Content-Type", "Accept"},
 		AllowedDomains: []string{AllowedDomain},
-		AllowedMethods: []string{"GET", "POST", "PUT", "DELETE"},
+		AllowedMethods: []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
 		Container:      wsContainer,
 	}
 
