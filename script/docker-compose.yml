@@ -2,12 +2,12 @@ version: '2'
 services:
     pbrain:
       container_name: pbrain
-      command: pbrain manager -o *
+      command: pbrain manager -o http://192.168.86.106:8888
       network_mode: "host"
       image: 192.168.86.106:5000/pbrain:latest
 
     shipyard:
-      container_name: shipyard
+      container_name: dface
       command: controller server --listen :8888 -d tcp://192.168.96.99:4000 --rethinkdb-addr localhost:28015
       image: 192.168.86.106:5000/dface:latest
       network_mode: "host"
