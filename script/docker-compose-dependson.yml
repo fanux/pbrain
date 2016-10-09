@@ -1,0 +1,23 @@
+version: '2'
+services:
+    db:
+     container_name: pbrain-db
+     image: 192.168.86.106:5000/postgres:latest
+     environment:
+       POSTGRES_USER: shipyard 
+       POSTGRES_DB: shipyard 
+       POSTGRES_PASSWORD: 111111 
+     network_mode: "host"
+     command: postgres
+
+    mq:
+       container_name: pbrain-mq
+       image: 192.168.86.106:5000/gnatsd:latest
+       command: gnatsd
+       network_mode: "host"
+
+    rethinkdb:
+      container_name: shipyard-rethinkdb
+      command: rethinkdb  
+      network_mode: "host"
+      image: 192.168.86.106:5000/rethinkdb:latest

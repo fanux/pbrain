@@ -1,52 +1,13 @@
 version: '2'
 services:
-   db:
-     container_name: pbrain-db
-     image: 192.168.86.106:5000/postgres:latest
-     restart: always
-     environment:
-       POSTGRES_USER: shipyard 
-       POSTGRES_DB: shipyard 
-       POSTGRES_PASSWORD: 111111 
-     ports:
-       - 5432:5432
-     command: postgres
-
-    mq:
-       container_name: pbrain-mq
-       image: 192.168.86.106:5000/gnatsd:latest
-       restart: always
-       command: gnatsd
-       ports:
-         - 4222:4222
-         - 8333:8333
-
     pbrain:
       container_name: pbrain
       command: pbrain manager -o *
-      restart: always
-      depends_on:
-        - db
-        - mq
+      network_mode: "host"
       image: 192.168.86.106:5000/pbrain:latest
-      links:
-        - db
-        - mq
-
-    rethinkdb:
-      container_name: shipyard-rethinkdb
-      command: rethinkdb  
-      restart: always
-      image: 192.168.86.106:5000/rethinkdb:latest
-      ports:
-        - 28015:28015
 
     shipyard:
       container_name: shipyard
-      command: controller server --listen :8888 -d "tcp://192.168.96.99:4000" --rethinkdb-addr "192.168.86.106:28015"
-      restart: always
-      image: 192.168.86.106:5000/pbrain:latest
-      depends_on:
-        - rethinkdb
-      links:
-        - rethinkdb
+      command: controller server --listen :8888 -d tcp://192.168.96.99:4000 --rethinkdb-addr localhost:28015
+      image: 192.168.86.106:5000/dface:latest
+      network_mode: "host"
