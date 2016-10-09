@@ -388,7 +388,7 @@ func RunServer(host string, port string) {
 	defer db.Close()
 
 	cors := restful.CrossOriginResourceSharing{
-		AllowedHeaders: []string{"x-access-token"},
+		AllowedHeaders: []string{"x-access-token", "content-type", "accept"},
 		AllowedDomains: []string{AllowedDomain},
 		AllowedMethods: []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
 		Container:      wsContainer,
