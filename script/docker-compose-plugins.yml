@@ -2,12 +2,12 @@ version: '2'
 services:
     pipeline:
       container_name: plugin-pipeline
-      command: pbrain -H localhost -p :8081 pipeline
+      command: pbrain pipeline
       network_mode: "host"
       image: 192.168.86.106:5000/pbrain:latest
 
     decider:
       container_name: plugin-decider
-      command: pbrain -H localhost -p :8081 decider
+      command: pbrain decider
       network_mode: "host"
       image: 192.168.86.106:5000/pbrain:latest
