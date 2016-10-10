@@ -26,6 +26,9 @@ pgsql---------------+
 使用docker-compose启动系统, 由于docker-compose的依赖关系不会等待进程启动成功，所以使用dependson会有问题，这里分开启动。
 
 确保上一步执行完了再执行下一步, 在后台运行加-d参数
+
+-H 参数可以指定运行的Docker host
+
 ```
 $ docker-compose -f docker-compose-dependson.yml up 
 $ docker-compose -f docker-compose.yml up
