@@ -32,6 +32,7 @@ pbrain是go语言的集群调度插件系统，我是在本地（开发环境）
 在工程主目录下创建一个Dockerfile文件
 
 > Dockerfile
+
 ```bash
 FROM golang:latest                            # 选择一个go的基础镜像，这样编译运行的环境就有了
 
