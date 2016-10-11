@@ -29,6 +29,12 @@ pgsql---------------+
 
 -H 参数可以指定运行的Docker host
 
+如向swarm(tcp://192.168.96.99:4000) 集群发送命令启动一个容器：
+
+```
+docker-compose -H  tcp://192.168.96.99:4000 -f docker-compose.yml up
+```
+
 ```
 $ docker-compose -f docker-compose-dependson.yml up 
 $ docker-compose -f docker-compose.yml up
