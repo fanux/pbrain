@@ -22,6 +22,10 @@ deploy项目同步到生产环境的仓库中。
 
 
 ### 仓库部署
+安装docker-compose
+```
+$ pip install --upgrade pip && pip install docker-compose
+```
 ```
 $ git clone https://github.com/vmware/harbor
 $ cd harbor
