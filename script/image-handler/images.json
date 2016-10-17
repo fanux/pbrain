@@ -1,5 +1,10 @@
 {
     "images":[
-        "golang:latest"
+        "rethinkdb:latest",
+        "dface:latest",
+        "swarm:latest",
+        "gnatsd:latest",
+        "postgres:latest",
+        "pbrain:latest"
     ]
 }
