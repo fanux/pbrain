@@ -77,3 +77,8 @@ docker-compose -H tcp://172.16.162.4:4000 down
 ```
 docker exec -it $(容器名) /bin/bash
 ```
+不想到宿主机上去也行：
+```
+docker -H tcp://172.16.162.4:4000 exec -it iat_162_25 /bin/bash
+```
+-H 指定swarm manager的地址
