@@ -1,44 +1,104 @@
 package manager
 
 import (
+	"encoding/json"
 	"fmt"
-	"log"
 
-	"github.com/jinzhu/gorm"
-	_ "github.com/jinzhu/gorm/dialects/postgres"
+	"github.com/Sirupsen/logrus"
+	"github.com/syndtr/goleveldb/leveldb"
 )
 
-func initDB(host, port, user, dbname, passwd string) *gorm.DB {
-	s := fmt.Sprintf("host=%s port=%s user=%s dbname=%s sslmode=disable password=%s",
-		host, port, user, dbname, passwd)
-	log.Print("db info %s", s)
-	db, err := gorm.Open("postgres", s)
+//PluginDB is
+type PluginDB struct {
+	*leveldb.DB
+}
 
+//Dber is
+type Dber interface {
+	Save(*PluginStrategy)
+	Load(string) *PluginStrategy
+	LoadAll() map[string]*PluginStrategy
+	Delete(string)
+}
+
+//Save is
+func (db *PluginDB) Save(p *PluginStrategy) {
+	key := []byte(p.Name)
+	value, err := json.Marshal(p)
 	if err != nil {
-		log.Print("error init db", err)
+		logrus.Errorf("Plugin json marshal error: %s", err)
+	}
+
+	err = db.Put(key, value, nil)
+	if err != nil {
+		fmt.Println(err)
+	}
+}
+
+//Load is
+func (db *PluginDB) Load(name string) *PluginStrategy {
+	key := []byte(name)
+	data, err := db.Get(key, nil)
+	if err != nil {
+		logrus.Errorf("Load error: %s", err)
+	}
+	p := &PluginStrategy{}
+	err := json.Unmarshal(data, p)
+	if err != nil {
+		logrus.Errorf("Load plugin json error: %s", err)
 		return nil
 	}
 
-	if !db.HasTable(&Plugin{}) {
-		db.CreateTable(&Plugin{})
-		db.Set("gorm:table_options", "ENGINE=InnoDB").CreateTable(&Plugin{})
-	} else {
-		log.Print("plugins table already exist")
+	return p
+}
+
+//LoadAll is
+func (db *PluginDB) LoadAll() (m map[string]*PluginStrategy) {
+	m = make(map[string]*PluginStrategy)
+
+	iter := db.NewIterator(nil, nil)
+	for iter.Next() {
+		// Remember that the contents of the returned slice should not be modified, and
+		// only valid until the next call to Next.
+		key := string(iter.Key())
+		value := iter.Value()
+
+		p := &PluginStrategy{}
+		err := json.Unmarshal(value, p)
+		if err != nil {
+			logrus.Errorf("unmarsal plugin json faied! %s", err)
+			continue
+		}
+
+		m[key] = p
+	}
+	iter.Release()
+	err = iter.Error()
+	if err != nil {
+		logrus.Errorf(err)
 	}
 
-	if !db.HasTable(&Strategy{}) {
-		db.CreateTable(&Strategy{})
-		db.Set("gorm:table_options", "ENGINE=InnoDB").CreateTable(&Strategy{})
-	} else {
-		log.Print("strategies table already exist")
+	return
+}
+
+//Delete is
+func (db *PluginDB) Delete(name string) {
+	key := []byte(name)
+	err = db.Delete(key, nil)
+	if err != nil {
+		logrus.Errorf(err)
 	}
-	/*
-		p := Plugin{Name: "pipeline", Kind: "nil", Status: "enable", Description: "nil", SpecJsonStr: "nil", Manual: "nil"}
+}
 
-		db.NewRecord(p)
-		db.Create(&p)
-	*/
+//NewDb is
+func NewDb(name string, path string) Dber {
+	if path == "" {
+		path = "./db"
+	}
+	db, err := leveldb.OpenFile(path, nil)
+	if err != nil {
+		logrus.Errorf(err)
+	}
 
-	return db
-	//defer db.Close()
+	return *PluginDB{db}
 }

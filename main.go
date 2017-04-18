@@ -1,4 +1,4 @@
-// Copyright © 2016 NAME HERE <EMAIL ADDRESS>
+// Copyright © 2017 NAME HERE <EMAIL ADDRESS>
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -14,14 +14,8 @@
 
 package main
 
-import (
-	"log"
-
-	"github.com/fanux/pbrain/cmd"
-)
+import "github.com/fanux/pbrain/cmd"
 
 func main() {
-	// print the file name directory and line
-	log.SetFlags(log.Llongfile)
 	cmd.Execute()
 }

@@ -1,4 +1,4 @@
-// Copyright © 2016 NAME HERE <EMAIL ADDRESS>
+// Copyright © 2017 NAME HERE <EMAIL ADDRESS>
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -21,36 +21,22 @@ import (
 	"github.com/spf13/cobra"
 )
 
-/*
-var (
-	Host string
-	Port string
-
-	DBHost   string
-	DBPort   string
-	DBUser   string
-	DBName   string
-	DBPasswd string
-
-	DockerHost string
-
-	AllowedDomain string
-)
-*/
+var opts manager.Opts
 
 // managerCmd represents the manager command
 var managerCmd = &cobra.Command{
 	Use:   "manager",
-	Short: "start the manager server",
-	Long:  `start the manager server`,
+	Short: "A brief description of your command",
+	Long: `A longer description that spans multiple lines and likely contains examples
+and usage of using your command. For example:
+
+Cobra is a CLI library for Go that empowers applications.
+This application is a tool to generate the needed files
+to quickly create a Cobra application.`,
 	Run: func(cmd *cobra.Command, args []string) {
 		// TODO: Work your own magic here
-		fmt.Printf("database info host=%s port=%s user=%s name=%s passwd=%s\n",
-			manager.DBHost, manager.DBPort, manager.DBUser, manager.DBName, manager.DBPasswd)
-		//initDB(DBHost, DBPort, DBUser, DBName, DBPasswd)
-
-		fmt.Println("manager called: ", manager.Host, manager.Port)
-		manager.RunServer(manager.Host, manager.Port)
+		fmt.Println("manager called")
+		manager.StartManager(opts)
 	},
 }
 
@@ -67,16 +53,4 @@ func init() {
 	// is called directly, e.g.:
 	// managerCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
 
-	managerCmd.Flags().StringVarP(&manager.Host, "host", "H", "localhost", "the ip address of manager server")
-	managerCmd.Flags().StringVarP(&manager.Port, "port", "p", ":8081", "the port of manager server")
-
-	managerCmd.Flags().StringVarP(&manager.DBHost, "db-host", "d", "localhost", "the address of database server")
-	managerCmd.Flags().StringVarP(&manager.DBPort, "db-port", "P", "5432", "the port of database server, default pgsql port is 5432")
-	managerCmd.Flags().StringVarP(&manager.DBUser, "db-user", "u", "shipyard", "the user of database server")
-	managerCmd.Flags().StringVarP(&manager.DBName, "db-name", "n", "shipyard", "the database name of database server")
-	managerCmd.Flags().StringVarP(&manager.DBPasswd, "db-passwd", "w", "111111", "the database passwd")
-
-	managerCmd.Flags().StringVarP(&manager.DockerHost, "docker-host", "s", "http://192.168.96.99:4000", "the docker host")
-
-	managerCmd.Flags().StringVarP(&manager.AllowedDomain, "allowed-domain", "o", "http://192.168.86.170:8888", "manager allowed origin")
 }
