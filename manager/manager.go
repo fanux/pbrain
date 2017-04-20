@@ -114,9 +114,8 @@ func StartManager(opts Opts) {
 
 	for k, v := range pluginMap.plugins {
 		events[k] = make(chan Command)
-		ctx, cancel := context.WithCancel(context.Background())
+		ctx := context.Background()
 		ctx = context.WithValue(ctx, k, v)
-		defer cancel()
 
 		p = GetPlugin(k)
 		go func(ctx context.Context, command chan Command, p Pluginer) {
@@ -124,15 +123,15 @@ func StartManager(opts Opts) {
 				cmd := <-command
 				switch cmd.Name {
 				case PluginCommandCreate:
-					go p.Create(ctx)
+				//	go p.Create(ctx)
 				case PluginCommandStart:
 					go p.Start(ctx)
 				case PluginCommandStop:
-					go p.Stop(ctx)
+				//	go p.Stop(ctx)
 				case PluginCommandDestroy:
-					go p.Destroy(ctx)
+				//	go p.Destroy(ctx)
 				case PluginCommandOnaction:
-					go p.OnAction(ctx, cmd.Sname, cmd.Body)
+					go p.OnAction(ctx, cmd.Pname, cmd.Sname, cmd.Body)
 				default:
 					logrus.Errorf("Unknow command type: %s", cmd.Name)
 				}
@@ -140,6 +139,12 @@ func StartManager(opts Opts) {
 		}(ctx, events[k], p)
 
 		events[k] <- Command{PluginCommandStart, k, "", ""}
+
+		for sname, s := range v.Strategy {
+			if s.Status == StrategyActionEnable {
+				events[k] <- Command{PluginCommandOnaction, k, sname, StrategyActionEnable}
+			}
+		}
 	}
 
 	//just for test
