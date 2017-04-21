@@ -21,7 +21,11 @@ import (
 	"github.com/spf13/cobra"
 )
 
-var opts manager.Opts
+//falgs
+var (
+	opts     manager.Opts
+	SwarmURL string
+)
 
 // managerCmd represents the manager command
 var managerCmd = &cobra.Command{
@@ -52,5 +56,6 @@ func init() {
 	// Cobra supports local flags which will only run when this command
 	// is called directly, e.g.:
 	// managerCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
+	managerCmd.Flags().StringVarP(&SwarmURL, "docker-host", "H", "http://cattle.com:4000", "the docker host")
 
 }
