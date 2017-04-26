@@ -98,11 +98,13 @@ func (j *PluginJudge) RunStrategy(s *manager.Strategy) {
 			j.MetricsCount += c.Collect()
 			time.Sleep(j.Particle)
 		}
-		cmds := j.Judge()
 		j.TimesCount = 0
 		j.MetricsCount = 0
-		if err := Excute(cmds); err != nil {
-			logrus.Errorf("Excute cmds [ %s ] error: %s", cmds, err)
+		cmds := j.Judge()
+		if len(cmds) != 0 {
+			if err := Excute(cmds); err != nil {
+				logrus.Errorf("Excute cmds [ %s ] error: %s", cmds, err)
+			}
 		}
 	}
 }

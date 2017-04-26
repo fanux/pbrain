@@ -120,6 +120,7 @@ func StartManager(opts Opts) {
 		p = GetPlugin(k)
 		go func(ctx context.Context, command chan Command, p Pluginer) {
 			for {
+				//TODO each gorutine communicate with ctx, set a chan into ctx
 				cmd := <-command
 				switch cmd.Name {
 				case PluginCommandCreate:
