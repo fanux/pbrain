@@ -43,7 +43,7 @@ func (db *PluginDB) Load(name string) *PluginStrategy {
 		logrus.Errorf("Load error: %s", err)
 	}
 	p := &PluginStrategy{}
-	err := json.Unmarshal(data, p)
+	err = json.Unmarshal(data, p)
 	if err != nil {
 		logrus.Errorf("Load plugin json error: %s", err)
 		return nil
@@ -73,9 +73,9 @@ func (db *PluginDB) LoadAll() (m map[string]*PluginStrategy) {
 		m[key] = p
 	}
 	iter.Release()
-	err = iter.Error()
+	err := iter.Error()
 	if err != nil {
-		logrus.Errorf(err)
+		logrus.Errorf("%s", err)
 	}
 
 	return
@@ -84,9 +84,9 @@ func (db *PluginDB) LoadAll() (m map[string]*PluginStrategy) {
 //Delete is
 func (db *PluginDB) Delete(name string) {
 	key := []byte(name)
-	err = db.Delete(key, nil)
+	err := db.DB.Delete(key, nil)
 	if err != nil {
-		logrus.Errorf(err)
+		logrus.Errorf("%s", err)
 	}
 }
 
@@ -97,8 +97,8 @@ func NewDb(name string, path string) Dber {
 	}
 	db, err := leveldb.OpenFile(path, nil)
 	if err != nil {
-		logrus.Errorf(err)
+		logrus.Errorf("%s", err)
 	}
 
-	return *PluginDB{db}
+	return &PluginDB{db}
 }

@@ -7,7 +7,7 @@ type Codec interface {
 }
 
 //NewCodec is
-func NewCodec(name string) {
+func NewCodec(name string) Codec {
 	return &JSONCodec{}
 }
 
@@ -16,9 +16,11 @@ type JSONCodec struct {
 }
 
 //Encode is
-func (*JsonCodec) Encode(p *PluginStrategy) ([]byte, error) {
+func (j *JSONCodec) Encode(p *PluginStrategy) ([]byte, error) {
+	return []byte{}, nil
 }
 
 //Decode is
-func (*JsonCodec) Decode(b []byte) (*PluginStrategy, error) {
+func (j *JSONCodec) Decode(b []byte) (*PluginStrategy, error) {
+	return nil, nil
 }

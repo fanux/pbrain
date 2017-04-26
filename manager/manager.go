@@ -86,7 +86,7 @@ func (ps *PluginMap) GetStrategy(pname string, name string) *Strategy {
 //SetPlugin is
 func (ps *PluginMap) SetPlugin(name string, p Plugin) {
 	ps.mutex.Lock()
-	defer ps.metex.Unlock()
+	defer ps.mutex.Unlock()
 
 	ps.plugins[name].Plugin = &p
 	//Save to db
@@ -96,7 +96,7 @@ func (ps *PluginMap) SetPlugin(name string, p Plugin) {
 //SetStrategy is
 func (ps *PluginMap) SetStrategy(pname string, name string, s Strategy) {
 	ps.mutex.Lock()
-	defer ps.metex.Unlock()
+	defer ps.mutex.Unlock()
 
 	ps.plugins[pname].Strategy[name] = &s
 	//Save to db
@@ -117,7 +117,7 @@ func StartManager(opts Opts) {
 		ctx := context.Background()
 		ctx = context.WithValue(ctx, k, v)
 
-		p = GetPlugin(k)
+		p := GetPlugin(k)
 		go func(ctx context.Context, command chan Command, p Pluginer) {
 			for {
 				//TODO each gorutine communicate with ctx, set a chan into ctx
