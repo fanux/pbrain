@@ -3,7 +3,9 @@ pipeline:
        image: 10.1.86.51/devops/golang:1.7-godep
        commands:
          - echo "LABEL commit=$$COMMIT branch=$$BRANCH build_number=$$BUILD_NUMBER" >> Dockerfile
-         - godep go build -o pbrain
+         - mkdir -p $GOPATH/src/github.com/fanux/pbrain && cp -r ./* $GOPATH/src/github.com/fanux/pbrain
+         - cd $GOPATH/src/github.com/fanux/pbrain && godep go build -o pbrain
+         - cd - && cp $GOPATH/src/github.com/fanux/pbrain .
 
     publish:
       image: plugins/docker
